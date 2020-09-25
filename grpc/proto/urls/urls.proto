@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package U3p5bW9uLUdhamRh;
+package urls;
 
-option go_package = "github.com/Mrucznik/U3p5bW9uLUdhamRh";
+option go_package = "proto/urls";
 
 import "google/api/annotations.proto"; //from https://github.com/googleapis/googleapis
 
@@ -39,7 +39,7 @@ service UrlsService {
     }
 }
 
-// URL data.
+// Message that represents an URL data.
 message Url {
     int32 id = 1;
     // URL Address.
@@ -48,7 +48,7 @@ message Url {
     int32 interval = 3;
 }
 
-// Response from URL.
+// Message that represents a response from URL.
 message Response {
     // Response received from an URL call.
     string response = 1;
