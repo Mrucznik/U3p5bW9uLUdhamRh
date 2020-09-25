@@ -18,6 +18,8 @@ import (
 //go:generate protoc -I. -I$GOPATH/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.14.6/third_party/googleapis --go_opt plugins=grpc --grpc-gateway_out . --go_out . --grpc-gateway_opt logtostderr=true --swagger_out ./gen/swagger --swagger_opt logtostderr=true --grpc-gateway_opt paths=source_relative proto/urls/urls.proto
 
 func main() {
+	viper.SetDefault("port", 8080)
+
 	// if we crash the go code, we get the file name and line number in log
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
@@ -26,12 +28,6 @@ func main() {
 	if err != nil {
 		logrus.Fatalf("Failed to listen: %v", err)
 	}
-	defer func() {
-		err := listener.Close()
-		if err != nil {
-			logrus.Infoln("Errors caused by closing listener:", err)
-		}
-	}()
 	logrus.Infoln("Listener started on", listener.Addr())
 
 	//server options
