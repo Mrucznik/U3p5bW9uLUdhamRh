@@ -6,16 +6,18 @@ option go_package = "github.com/Mrucznik/U3p5bW9uLUdhamRh";
 
 import "google/api/annotations.proto"; //from https://github.com/googleapis/googleapis
 
+// It provides service to continuously fetch specific URLs
+// by specified interval.
 service UrlsService {
 
-    //
+    // Create an URL and runs worker, that fetch data from url by specified interval.
     rpc CreateUrl(CreateUrlRequest) returns (CreateUrlResponse) {
         option (google.api.http) = {
             post: "/api/fetcher"
         };
     }
 
-    //
+    // Delete an URL and stops worker.
     rpc DeleteUrl(DeleteUrlRequest) returns (DeleteUrlResponse) {
         option (google.api.http) = {
             delete: "/api/fetcher/{id}"
@@ -29,46 +31,69 @@ service UrlsService {
         };
     }
 
-    //
+    // Get URL fetching history.
     rpc GetUrlHistory(GetUrlHistoryRequest) returns (GetUrlHistoryResponse) {
         option (google.api.http) = {
-            get: "/api/fetcher/{id}"
+            get: "/api/fetcher/{id}/history"
         };
     }
 }
 
+// URL data.
+message Url {
+    int32 id = 1;
+    // URL Address.
+    string url = 2;
+    // Interval determining how often data should be fetched.
+    int32 interval = 3;
+}
+
+// Response from URL.
+message Response {
+    // Response received from an URL call.
+    string response = 1;
+    // How long does it take to get a response.
+    double duration = 2;
+    // Creation timestamp.
+    double created_at = 3;
+}
+
 // Request message for rpc `CreateUrl`.
 message CreateUrlRequest {
-
+    // URL Address.
+    string url = 1;
+    // Interval determining how often data should be fetched.
+    int32 interval = 2;
 }
 // Response message for rpc `CreateUrl`.
 message CreateUrlResponse {
-
+    // ID of created URL address.
+    int32 id = 1;
 }
 
 // Request message for rpc `DeleteUrl`.
 message DeleteUrlRequest {
-
+    // ID of URL Address.
+    int32 id = 1;
 }
 // Response message for rpc `DeleteUrl`.
 message DeleteUrlResponse {
-
+    int32 id = 1;
 }
 
 // Request message for rpc `GetUrls`.
-message GetUrlsRequest {
-
-}
+message GetUrlsRequest {}
 // Response message for rpc `GetUrls`.
 message GetUrlsResponse {
-
+    repeated Url urls = 1;
 }
 
 // Request message for rpc `GetUrlHistory`.
 message GetUrlHistoryRequest {
-
+    // ID of URL Address.
+    int32 id = 1;
 }
 // Response message for rpc `GetUrlHistory`.
 message GetUrlHistoryResponse {
-
+    repeated Response history = 1;
 }
