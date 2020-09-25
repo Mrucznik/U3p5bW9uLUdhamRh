@@ -1,43 +1,53 @@
 package engine
 
 import (
+	"errors"
 	"github.com/Mrucznik/U3p5bW9uLUdhamRh/proto/urls"
 )
 
 type InMemoryUrls struct {
-	urls    []*urls.Url
-	history map[int32][]*urls.Response
+	workers map[int32]*Worker
+	ids     int32
 }
 
 func NewInMemoryUrls() *InMemoryUrls {
 	return &InMemoryUrls{
-		urls:    make([]*urls.Url, 0),
-		history: make(map[int32][]*urls.Response, 0),
+		workers: make(map[int32]*Worker, 0),
 	}
 }
 
 func (i *InMemoryUrls) Create(url string, interval int32) int32 {
-	id := int32(len(i.urls))
-	i.urls = append(i.urls,
-		&urls.Url{
-			Id:       id,
-			Url:      url,
-			Interval: interval,
-		})
-	i.history[id] = make([]*urls.Response, 0)
+	id := i.ids
+	i.workers[id] = NewWorker(url, interval)
+	i.workers[id].Start()
+	i.ids++
 	return id
 }
 
-func (i *InMemoryUrls) Delete(id int32) {
-	// TODO: O(n) for delete :/ maybe do smth else here
-	i.urls = append(i.urls[:id], i.urls[id+1:]...)
-	delete(i.history, id)
+func (i *InMemoryUrls) Delete(id int32) error {
+	if worker, ok := i.workers[id]; ok {
+		worker.Stop()
+		delete(i.workers, id)
+		return nil
+	}
+	return errors.New("not found")
 }
 
 func (i *InMemoryUrls) Get() []*urls.Url {
-	return i.urls
+	result := make([]*urls.Url, 0, len(i.workers))
+	for id, worker := range i.workers {
+		result = append(result, &urls.Url{
+			Id:       id,
+			Url:      worker.url,
+			Interval: int32(worker.interval.Milliseconds()),
+		})
+	}
+	return result
 }
 
-func (i *InMemoryUrls) History(id int32) []*urls.Response {
-	return i.history[id]
+func (i *InMemoryUrls) History(id int32) ([]*urls.Response, error) {
+	if worker, ok := i.workers[id]; ok {
+		return worker.GetResults(), nil
+	}
+	return nil, errors.New("not found")
 }

@@ -161,8 +161,8 @@
           "description": "How long does it take to get a response."
         },
         "created_at": {
-          "type": "number",
-          "format": "double",
+          "type": "string",
+          "format": "int64",
           "description": "Creation timestamp."
         }
       },

@@ -55,7 +55,7 @@ message Response {
     // How long does it take to get a response.
     double duration = 2;
     // Creation timestamp.
-    double created_at = 3;
+    int64 created_at = 3;
 }
 
 // Request message for rpc `CreateUrl`.
