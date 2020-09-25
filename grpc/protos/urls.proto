@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package U3p5bW9uLUdhamRh;
+
+option go_package = "github.com/Mrucznik/U3p5bW9uLUdhamRh";
+
+import "google/api/annotations.proto"; //from https://github.com/googleapis/googleapis
+
+service UrlsService {
+
+    //
+    rpc CreateUrl(CreateUrlRequest) returns (CreateUrlResponse) {
+        option (google.api.http) = {
+            post: "/api/fetcher"
+        };
+    }
+
+    //
+    rpc DeleteUrl(DeleteUrlRequest) returns (DeleteUrlResponse) {
+        option (google.api.http) = {
+            delete: "/api/fetcher/{id}"
+        };
+    }
+
+    // Gets all stored URLs.
+    rpc GetUrls(GetUrlsRequest) returns (GetUrlsResponse) {
+        option (google.api.http) = {
+            get: "/api/fetcher"
+        };
+    }
+
+    //
+    rpc GetUrlHistory(GetUrlHistoryRequest) returns (GetUrlHistoryResponse) {
+        option (google.api.http) = {
+            get: "/api/fetcher/{id}"
+        };
+    }
+}
+
+// Request message for rpc `CreateUrl`.
+message CreateUrlRequest {
+
+}
+// Response message for rpc `CreateUrl`.
+message CreateUrlResponse {
+
+}
+
+// Request message for rpc `DeleteUrl`.
+message DeleteUrlRequest {
+
+}
+// Response message for rpc `DeleteUrl`.
+message DeleteUrlResponse {
+
+}
+
+// Request message for rpc `GetUrls`.
+message GetUrlsRequest {
+
+}
+// Response message for rpc `GetUrls`.
+message GetUrlsResponse {
+
+}
+
+// Request message for rpc `GetUrlHistory`.
+message GetUrlHistoryRequest {
+
+}
+// Response message for rpc `GetUrlHistory`.
+message GetUrlHistoryResponse {
+
+}
