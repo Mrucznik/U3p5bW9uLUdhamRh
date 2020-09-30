@@ -42,6 +42,16 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/urlsCreateUrlRequest"
+            }
+          }
+        ],
         "tags": [
           "UrlsService"
         ]
@@ -103,6 +113,21 @@
     }
   },
   "definitions": {
+    "urlsCreateUrlRequest": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "URL Address."
+        },
+        "interval": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Interval determining how often data should be fetched."
+        }
+      },
+      "description": "Request message for rpc `CreateUrl`."
+    },
     "urlsCreateUrlResponse": {
       "type": "object",
       "properties": {

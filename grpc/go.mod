@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	github.com/golang/protobuf v1.4.2
-	github.com/grpc-ecosystem/grpc-gateway v1.9.0
+	github.com/grpc-ecosystem/grpc-gateway v1.14.8
 	github.com/sirupsen/logrus v1.6.0
 	github.com/spf13/viper v1.7.1
 	golang.org/x/net v0.0.0-20200925080053-05aa5d4ee321 // indirect
