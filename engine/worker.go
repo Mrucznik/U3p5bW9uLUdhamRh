@@ -2,7 +2,7 @@ package engine
 
 import (
 	"context"
-	"github.com/Mrucznik/U3p5bW9uLUdhamRh/proto/urls"
+	"github.com/Mrucznik/U3p5bW9uLUdhamRh/grpc/proto/urls"
 	"io/ioutil"
 	"log"
 	"net/http"

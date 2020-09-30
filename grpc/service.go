@@ -1,9 +1,9 @@
-package service
+package grpc
 
 import (
 	"context"
 	"github.com/Mrucznik/U3p5bW9uLUdhamRh/engine"
-	"github.com/Mrucznik/U3p5bW9uLUdhamRh/proto/urls"
+	"github.com/Mrucznik/U3p5bW9uLUdhamRh/grpc/proto/urls"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"net/url"

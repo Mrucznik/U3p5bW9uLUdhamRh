@@ -1,7 +1,7 @@
 package engine
 
 import (
-	"github.com/Mrucznik/U3p5bW9uLUdhamRh/proto/urls"
+	"github.com/Mrucznik/U3p5bW9uLUdhamRh/grpc/proto/urls"
 )
 
 type DatabaseUrls struct {

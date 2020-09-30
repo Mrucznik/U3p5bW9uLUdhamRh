@@ -2,7 +2,7 @@ package engine
 
 import (
 	"errors"
-	"github.com/Mrucznik/U3p5bW9uLUdhamRh/proto/urls"
+	"github.com/Mrucznik/U3p5bW9uLUdhamRh/grpc/proto/urls"
 )
 
 type InMemoryUrls struct {
