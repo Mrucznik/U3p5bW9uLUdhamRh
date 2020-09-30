@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/Mrucznik/U3p5bW9uLUdhamRh/proto/urls"
 	"github.com/Mrucznik/U3p5bW9uLUdhamRh/service"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
@@ -11,6 +13,7 @@ import (
 	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
+	"net/http"
 	"os"
 	"os/signal"
 )
@@ -19,12 +22,14 @@ import (
 
 func main() {
 	viper.SetDefault("port", 8080)
+	viper.SetDefault("grpcPort", 8081)
 
 	// if we crash the go code, we get the file name and line number in log
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	logrus.Infoln("Starting listener for gRPC API")
-	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("port")))
+	listener, err := net.Listen("tcp",
+		fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("grpcPort")))
 	if err != nil {
 		logrus.Fatalf("Failed to listen: %v", err)
 	}
@@ -33,7 +38,8 @@ func main() {
 	//server options
 	var opts []grpc.ServerOption
 	if viper.GetBool("ssl.enabled") {
-		creds, sslErr := credentials.NewServerTLSFromFile(viper.GetString("ssl.cert"), viper.GetString("ssl.key"))
+		creds, sslErr := credentials.NewServerTLSFromFile(
+			viper.GetString("ssl.cert"), viper.GetString("ssl.key"))
 		if sslErr != nil {
 			logrus.Fatalln("Failed loading certificates:", sslErr)
 			return
@@ -57,10 +63,35 @@ func main() {
 		}
 	}()
 
+	// Set up the gRPC gateway for REST endpoints
+	if err = setUpgRPCGateway(); err != nil {
+		logrus.Fatalln("Failed to set up gRPC gateway: ", err)
+	}
+
 	// Wait for CTRL+C to exit
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, os.Interrupt)
 
 	<-ch // Block until signal is received
 	logrus.Infoln("\nStopping the server.")
+}
+
+func setUpgRPCGateway() error {
+	ctx := context.Background()
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	// Register gRPC server endpoint
+	// Note: Make sure the gRPC server is running properly and accessible
+	mux := runtime.NewServeMux()
+	opts := []grpc.DialOption{grpc.WithInsecure()}
+	err := urls.RegisterUrlsServiceHandlerFromEndpoint(ctx, mux,
+		fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("grpcPort")),
+		opts)
+	if err != nil {
+		return err
+	}
+
+	// Start HTTP server (and proxy calls to gRPC server endpoint)
+	return http.ListenAndServe(fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("port")), mux)
 }
