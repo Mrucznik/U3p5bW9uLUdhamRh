@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/Mrucznik/U3p5bW9uLUdhamRh/grpc"
+	"github.com/Mrucznik/U3p5bW9uLUdhamRh/rest"
 	"github.com/spf13/viper"
 )
 
@@ -10,10 +11,14 @@ import (
 
 func main() {
 	viper.AutomaticEnv()
+	viper.SetDefault("USE_GRPC", true)
 	viper.SetDefault("USE_DATABASE", true)
 	viper.SetDefault("PORT", 8080)
 	viper.SetDefault("GRPC_PORT", 8081)
 
-	//rest.RunRESTServer()
-	grpc.RunGRPCServer()
+	if viper.GetBool("USE_GRPC") {
+		grpc.RunGRPCServer()
+	} else {
+		rest.RunRESTServer()
+	}
 }
