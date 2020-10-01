@@ -1,0 +1,24 @@
+version: '3.3'
+
+services:
+  urls-service:
+    build: .
+      environment:
+        - DSN=root:secret@tcp(mysqld:3306)/mysql
+      networks:
+        intranet:
+  mysqld:
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    expose:
+      - '3306'
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_DATABASE=mysql
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+
+networks:
+  intranet:
+    driver: bridge
