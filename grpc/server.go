@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"github.com/Mrucznik/U3p5bW9uLUdhamRh/engine/in_memory"
 	"github.com/Mrucznik/U3p5bW9uLUdhamRh/grpc/proto/urls"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/sirupsen/logrus"
@@ -52,7 +53,7 @@ func RunGRPCServer() {
 	defer s.Stop()
 
 	// Register services
-	urls.RegisterUrlsServiceServer(s, NewServer())
+	urls.RegisterUrlsServiceServer(s, NewServer(in_memory.NewInMemoryURLsService())) // TODO: Can choose database also
 
 	go func() {
 		logrus.Println("Starting server.")

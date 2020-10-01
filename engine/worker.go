@@ -10,17 +10,17 @@ import (
 )
 
 type Worker struct {
-	url      string
-	interval time.Duration
-	results  []*urls.Response
+	Url      string
+	Interval time.Duration
+	saver    ISaver
 	cancel   context.CancelFunc
 }
 
-func NewWorker(url string, interval int32) *Worker {
+func NewWorker(url string, interval int32, saver ISaver) *Worker {
 	return &Worker{
-		url:      url,
-		interval: time.Duration(interval),
-		results:  make([]*urls.Response, 0),
+		Url:      url,
+		Interval: time.Duration(interval),
+		saver:    saver,
 	}
 }
 
@@ -34,7 +34,7 @@ func (w *Worker) Start() {
 			default:
 				w.fetch()
 			}
-			time.Sleep(w.interval * time.Millisecond)
+			time.Sleep(w.Interval * time.Millisecond)
 		}
 	}()
 }
@@ -44,12 +44,12 @@ func (w *Worker) Stop() {
 }
 
 func (w *Worker) GetResults() []*urls.Response {
-	return w.results
+	return w.saver.GetResults()
 }
 
 func (w *Worker) fetch() {
 	startTime := time.Now()
-	resp, err := http.Get(w.url)
+	resp, err := http.Get(w.Url)
 	duration := time.Since(startTime).Seconds()
 
 	if err == nil && resp.StatusCode == http.StatusOK {
@@ -58,16 +58,22 @@ func (w *Worker) fetch() {
 			log.Fatal(err)
 		}
 		bodyString := string(bodyBytes)
-		w.results = append(w.results, &urls.Response{
+		err = w.saver.Save(&urls.Response{
 			Response:  bodyString,
 			Duration:  duration,
 			CreatedAt: time.Now().Unix(),
 		})
+		if err != nil {
+			log.Fatal(err)
+		}
 	} else {
-		w.results = append(w.results, &urls.Response{
+		err = w.saver.Save(&urls.Response{
 			Response:  "null",
 			Duration:  duration,
 			CreatedAt: time.Now().Unix(),
 		})
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }

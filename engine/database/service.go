@@ -1,24 +1,28 @@
-package engine
+package database
 
 import (
 	"database/sql"
+	"github.com/Mrucznik/U3p5bW9uLUdhamRh/engine"
 	"github.com/Mrucznik/U3p5bW9uLUdhamRh/grpc/proto/urls"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-type DatabaseUrls struct {
-	db *sql.DB
+type DatabaseURLsService struct {
+	db      *sql.DB
+	workers map[int32]*engine.Worker
 }
 
-func NewDatabaseUrls(db *sql.DB) *DatabaseUrls {
-	//TODO: get data
-	return &DatabaseUrls{db: db}
+func NewDatabaseUrls(db *sql.DB) *DatabaseURLsService {
+	ret := &DatabaseURLsService{db: db}
+	ret.initWorkers()
+	return ret
 }
 
-func (d *DatabaseUrls) initWorkers() error {
-	rows, err := d.db.Query("SELECT id, address, `interval` FROM urls")
+// Fetch all existing URL's from database and start worker for each one.
+func (d *DatabaseURLsService) initWorkers() error {
+	rows, err := d.db.Query("SELECT id, address, `Interval` FROM urls")
 	if err != nil {
 		logrus.Error(err)
 		if err != sql.ErrNoRows {
@@ -34,7 +38,9 @@ func (d *DatabaseUrls) initWorkers() error {
 			return err
 		}
 
-		//TODO: start worker
+		// Create & start worker
+		d.workers[row.Id] = engine.NewWorker(row.Url, row.Interval, NewSaver(d.db))
+		d.workers[row.Id].Start()
 	}
 
 	if err = rows.Err(); err != nil {
@@ -44,9 +50,9 @@ func (d *DatabaseUrls) initWorkers() error {
 	return nil
 }
 
-// Create a new worker in database and start fetching data from url.
-func (d *DatabaseUrls) Create(url string, interval int) (int, error) {
-	result, err := d.db.Exec("INSERT INTO urls(address, interval) VALUE (?, ?)",
+// Create a new worker in database and start fetching data from Url.
+func (d *DatabaseURLsService) Create(url string, interval int) (int, error) {
+	result, err := d.db.Exec("INSERT INTO urls(address, Interval) VALUE (?, ?)",
 		url, interval)
 	if err != nil {
 		logrus.Error(err)
@@ -58,13 +64,17 @@ func (d *DatabaseUrls) Create(url string, interval int) (int, error) {
 		logrus.Error(err)
 		return 0, status.Error(codes.Internal, err.Error())
 	}
-	//TODO: start worker
+
+	// Create & start worker
+	id32 := int32(id)
+	d.workers[id32] = engine.NewWorker(url, int32(interval), NewSaver(d.db))
+	d.workers[id32].Start()
 
 	return int(id), nil
 }
 
-// Delete an existing worker, it's history and stop fetching data from url.
-func (d *DatabaseUrls) Delete(id int) error {
+// Delete an existing worker, it's history and stop fetching data from Url.
+func (d *DatabaseURLsService) Delete(id int) error {
 	result, err := d.db.Exec("DELETE FROM urls WHERE id = ?", id)
 	if err != nil {
 		logrus.Error(err)
@@ -80,14 +90,14 @@ func (d *DatabaseUrls) Delete(id int) error {
 	if deletedRows == 0 {
 		return status.Errorf(codes.NotFound, "Record of id %v not found.", id)
 	}
-	//TODO: stop worker
+	d.workers[int32(id)].Stop()
 
 	return nil
 }
 
 // Get all existing urls.
-func (d *DatabaseUrls) Get() ([]*urls.Url, error) {
-	rows, err := d.db.Query("SELECT id, address, `interval` FROM urls")
+func (d *DatabaseURLsService) Get() ([]*urls.Url, error) {
+	rows, err := d.db.Query("SELECT id, address, `Interval` FROM urls")
 	if err != nil {
 		logrus.Error(err)
 		if err == sql.ErrNoRows {
@@ -119,8 +129,8 @@ func (d *DatabaseUrls) Get() ([]*urls.Url, error) {
 }
 
 // Get fetching data from URL history.
-func (d *DatabaseUrls) History(id int) ([]*urls.Response, error) {
-	rows, err := d.db.Query("SELECT response, duration, created_at FROM url_history")
+func (d *DatabaseURLsService) History(id int) ([]*urls.Response, error) {
+	rows, err := d.db.Query("SELECT response, duration, created_at FROM url_history WHERE url_id=?", id)
 	if err != nil {
 		logrus.Error(err)
 		if err == sql.ErrNoRows {

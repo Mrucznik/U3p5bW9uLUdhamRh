@@ -10,11 +10,11 @@ import (
 )
 
 type Server struct {
-	urls engine.IUrls
+	urls engine.IURLsService
 }
 
-func NewServer() *Server {
-	return &Server{urls: engine.NewInMemoryUrls()}
+func NewServer(urls engine.IURLsService) *Server {
+	return &Server{urls: urls}
 }
 
 func IsUrl(str string) bool {
