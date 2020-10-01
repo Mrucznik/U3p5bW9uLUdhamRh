@@ -1,0 +1,269 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "grpc/proto/urls/urls.proto",
+    "version": "version not set"
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/fetcher": {
+      "get": {
+        "summary": "Gets all stored URLs.",
+        "operationId": "UrlsService_GetUrls",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/urlsGetUrlsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "tags": [
+          "UrlsService"
+        ]
+      },
+      "post": {
+        "summary": "Create a URL and runs worker, that fetch data from url by specified interval.",
+        "operationId": "UrlsService_CreateUrl",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/urlsCreateUrlResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/urlsCreateUrlRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UrlsService"
+        ]
+      }
+    },
+    "/api/fetcher/{id}": {
+      "delete": {
+        "summary": "Delete a URL and stops worker.",
+        "operationId": "UrlsService_DeleteUrl",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/urlsDeleteUrlResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "ID of URL Address.",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "UrlsService"
+        ]
+      }
+    },
+    "/api/fetcher/{id}/history": {
+      "get": {
+        "summary": "Get a URL fetching history.",
+        "operationId": "UrlsService_GetUrlHistory",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/urlsGetUrlHistoryResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "ID of URL Address.",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "UrlsService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "type_url": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "runtimeError": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "urlsCreateUrlRequest": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "URL Address."
+        },
+        "interval": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Interval determining how often data should be fetched."
+        }
+      },
+      "description": "Request message for rpc `CreateUrl`."
+    },
+    "urlsCreateUrlResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32",
+          "description": "ID of created URL address."
+        }
+      },
+      "description": "Response message for rpc `CreateUrl`."
+    },
+    "urlsDeleteUrlResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "description": "Response message for rpc `DeleteUrl`."
+    },
+    "urlsGetUrlHistoryResponse": {
+      "type": "object",
+      "properties": {
+        "history": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/urlsResponse"
+          }
+        }
+      },
+      "description": "Response message for rpc `GetUrlHistory`."
+    },
+    "urlsGetUrlsResponse": {
+      "type": "object",
+      "properties": {
+        "urls": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/urlsUrl"
+          }
+        }
+      },
+      "description": "Response message for rpc `GetUrls`."
+    },
+    "urlsResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "type": "string",
+          "description": "Response received from an URL call."
+        },
+        "duration": {
+          "type": "number",
+          "format": "double",
+          "description": "How long does it take to get a response."
+        },
+        "created_at": {
+          "type": "string",
+          "format": "int64",
+          "description": "Creation timestamp."
+        }
+      },
+      "description": "Message that represents a response from URL."
+    },
+    "urlsUrl": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "url": {
+          "type": "string",
+          "description": "URL Address."
+        },
+        "interval": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Interval determining how often data should be fetched."
+        }
+      },
+      "description": "Message that represents an URL data."
+    }
+  }
+}
