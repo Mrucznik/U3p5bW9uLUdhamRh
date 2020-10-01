@@ -38,6 +38,7 @@ $ docker-compose up
 ## Configuration
 
 You can configure this project by setting up environment variables:
+- USE_GRPC - tyure/false. Should we serve API by gRPC or by Chi.
 - PORT - port on which HTTP server will be listening on.
 - GRPC_PORT - port on which gRPC server will be listening on.
 - USE_DATABASE - true/false. Should service use in memory implementation or database.
@@ -46,6 +47,7 @@ You can configure this project by setting up environment variables:
 ## Project structure
 
 - db - contains database schema and database connection configuration.
+- docs - documentation files (swagger file and swagger-ui interface)
 - engine - contains source code of saving URLs and fetching mechanism.
     - database - implementation with storing URLs in a MySQL database.
     - in_memory - implementation with storing URLs in memory.
