@@ -36,7 +36,7 @@ func (w *Worker) Start() {
 			default:
 				w.fetch()
 			}
-			time.Sleep(w.Interval * time.Millisecond)
+			time.Sleep(w.Interval * time.Second)
 		}
 	}()
 }
