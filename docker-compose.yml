@@ -6,6 +6,7 @@ services:
     environment:
       - PORT=8080
       - GRPC_PORT=8081
+      - USE_DATABASE=true
       - DSN=root:secret@tcp(mysqld:3306)/mysql
     networks:
       intranet:

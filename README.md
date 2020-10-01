@@ -52,4 +52,4 @@ You can configure this project by setting up environment variables:
 - grpc - contains gRPC API server with gRPC gateway.
     - proto - protobuf files.
     - third_party - third party files.
-- rest - contains HTTP API server with Chi router.
+- rest - contains HTTP API server with Chi router. Not implemented.
