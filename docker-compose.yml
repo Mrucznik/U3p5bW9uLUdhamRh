@@ -3,10 +3,14 @@ version: '3.3'
 services:
   urls-service:
     build: .
-      environment:
-        - DSN=root:secret@tcp(mysqld:3306)/mysql
-      networks:
-        intranet:
+    environment:
+      - DSN=root:secret@tcp(mysqld:3306)/mysql
+    networks:
+      intranet:
+    ports:
+      - "8080:8080"
+    expose:
+      - '8080'
   mysqld:
     image: mysql:5.7
     ports:
