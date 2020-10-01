@@ -60,12 +60,12 @@ func RunGRPCServer() {
 		if err := s.Serve(listener); err != nil {
 			logrus.Fatalln("Failed to serve", err)
 		}
-	}()
 
-	// Set up the gRPC gateway for REST endpoints
-	if err = setUpgRPCGateway(); err != nil {
-		logrus.Fatalln("Failed to set up gRPC gateway: ", err)
-	}
+		// Set up the gRPC gateway for REST endpoints
+		if err = setUpgRPCGateway(); err != nil {
+			logrus.Fatalln("Failed to set up gRPC gateway: ", err)
+		}
+	}()
 
 	// Wait for CTRL+C to exit
 	ch := make(chan os.Signal, 1)
@@ -81,9 +81,7 @@ func setUpgRPCGateway() error {
 	defer cancel()
 
 	// Register gRPC server endpoint
-	// Note: Make sure the gRPC server is running properly and accessible
 	mux := runtime.NewServeMux()
-
 	opts := []grpc.DialOption{grpc.WithInsecure()}
 	err := urls.RegisterUrlsServiceHandlerFromEndpoint(ctx, mux,
 		fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("grpcPort")),

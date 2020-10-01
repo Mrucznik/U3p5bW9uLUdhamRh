@@ -31,7 +31,8 @@ func (s Server) CreateUrl(ctx context.Context, request *urls.CreateUrlRequest) (
 		return nil, status.Error(codes.InvalidArgument, "Invalid interval - must be positive.")
 	}
 
-	return &urls.CreateUrlResponse{Id: s.urls.Create(request.Url, request.Interval)}, nil
+	id, err := s.urls.Create(request.Url, request.Interval)
+	return &urls.CreateUrlResponse{Id: id}, err
 }
 
 func (s Server) DeleteUrl(ctx context.Context, request *urls.DeleteUrlRequest) (*urls.DeleteUrlResponse, error) {
@@ -43,7 +44,8 @@ func (s Server) DeleteUrl(ctx context.Context, request *urls.DeleteUrlRequest) (
 }
 
 func (s Server) GetUrls(ctx context.Context, request *urls.GetUrlsRequest) (*urls.GetUrlsResponse, error) {
-	return &urls.GetUrlsResponse{Urls: s.urls.Get()}, nil
+	result, err := s.urls.Get()
+	return &urls.GetUrlsResponse{Urls: result}, err
 }
 
 func (s Server) GetUrlHistory(ctx context.Context, request *urls.GetUrlHistoryRequest) (*urls.GetUrlHistoryResponse, error) {
