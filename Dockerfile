@@ -1,12 +1,20 @@
 # Build Stage
 FROM golang:alpine AS build-stage
 
+RUN apk update && apk add protoc
+
 WORKDIR /build
 
 COPY go.mod .
 COPY go.sum .
 
 RUN go mod download
+
+# Install plugins for protoc
+RUN go install \
+           github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway \
+           github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger \
+           github.com/golang/protobuf/protoc-gen-go
 
 COPY . .
 

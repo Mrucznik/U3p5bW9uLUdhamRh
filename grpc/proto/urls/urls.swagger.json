@@ -1,13 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "proto/urls/urls.proto",
+    "title": "grpc/proto/urls/urls.proto",
     "version": "version not set"
   },
-  "schemes": [
-    "http",
-    "https"
-  ],
   "consumes": [
     "application/json"
   ],
@@ -18,12 +14,18 @@
     "/api/fetcher": {
       "get": {
         "summary": "Gets all stored URLs.",
-        "operationId": "GetUrls",
+        "operationId": "UrlsService_GetUrls",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/urlsGetUrlsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
             }
           }
         },
@@ -33,12 +35,18 @@
       },
       "post": {
         "summary": "Create an URL and runs worker, that fetch data from url by specified interval.",
-        "operationId": "CreateUrl",
+        "operationId": "UrlsService_CreateUrl",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/urlsCreateUrlResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
             }
           }
         },
@@ -60,12 +68,18 @@
     "/api/fetcher/{id}": {
       "delete": {
         "summary": "Delete an URL and stops worker.",
-        "operationId": "DeleteUrl",
+        "operationId": "UrlsService_DeleteUrl",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/urlsDeleteUrlResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
             }
           }
         },
@@ -87,12 +101,18 @@
     "/api/fetcher/{id}/history": {
       "get": {
         "summary": "Get URL fetching history.",
-        "operationId": "GetUrlHistory",
+        "operationId": "UrlsService_GetUrlHistory",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/urlsGetUrlHistoryResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
             }
           }
         },
@@ -113,6 +133,39 @@
     }
   },
   "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "type_url": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "runtimeError": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
     "urlsCreateUrlRequest": {
       "type": "object",
       "properties": {
