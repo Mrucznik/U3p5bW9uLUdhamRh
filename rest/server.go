@@ -3,7 +3,7 @@ package rest
 import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"log"
+	"github.com/sirupsen/logrus"
 	"net/http"
 	"time"
 )
@@ -36,7 +36,7 @@ func RunRESTServer() {
 
 	err := http.ListenAndServe(":8080", r)
 	if err != nil {
-		log.Panicln(err)
+		logrus.Panicln(err)
 	}
 }
 

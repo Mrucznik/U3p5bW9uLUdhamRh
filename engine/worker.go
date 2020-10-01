@@ -64,7 +64,7 @@ func (w *Worker) fetch() {
 	if err == nil && resp.StatusCode == http.StatusOK {
 		bodyBytes, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			logrus.Fatal(err)
+			logrus.Errorln(err)
 		}
 		bodyString := string(bodyBytes)
 		err = w.saver.Save(&urls.Response{
@@ -73,7 +73,7 @@ func (w *Worker) fetch() {
 			CreatedAt: time.Now().Unix(),
 		})
 		if err != nil {
-			logrus.Fatal(err)
+			logrus.Errorln(err)
 		}
 	} else {
 		err = w.saver.Save(&urls.Response{
@@ -82,7 +82,7 @@ func (w *Worker) fetch() {
 			CreatedAt: time.Now().Unix(),
 		})
 		if err != nil {
-			logrus.Fatal(err)
+			logrus.Errorln(err)
 		}
 	}
 }

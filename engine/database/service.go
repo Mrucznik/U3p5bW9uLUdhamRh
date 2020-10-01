@@ -27,7 +27,7 @@ func NewURLsService(db *sql.DB) *URLsService {
 func (d *URLsService) loadWorkers() error {
 	rows, err := d.db.Query("SELECT id, address, `interval` FROM urls")
 	if err != nil {
-		logrus.Error(err)
+		logrus.Errorln(err)
 		if err != sql.ErrNoRows {
 			return err
 		}
@@ -58,14 +58,14 @@ func (d *URLsService) Create(url string, interval int32) (int32, error) {
 	result, err := d.db.Exec("INSERT INTO urls(address, `interval`) VALUE (?, ?)",
 		url, interval)
 	if err != nil {
-		logrus.Error(err)
+		logrus.Errorln(err)
 		return 0, status.Error(codes.Internal, err.Error())
 	}
 
 	id64, err := result.LastInsertId()
 	id := int32(id64)
 	if err != nil {
-		logrus.Error(err)
+		logrus.Errorln(err)
 		return 0, status.Error(codes.Internal, err.Error())
 	}
 
@@ -80,13 +80,13 @@ func (d *URLsService) Create(url string, interval int32) (int32, error) {
 func (d *URLsService) Delete(id int32) error {
 	result, err := d.db.Exec("DELETE FROM urls WHERE id = ?", id)
 	if err != nil {
-		logrus.Error(err)
+		logrus.Errorln(err)
 		return status.Error(codes.Internal, err.Error())
 	}
 
 	deletedRows, err := result.RowsAffected()
 	if err != nil {
-		logrus.Error(err)
+		logrus.Errorln(err)
 		return status.Error(codes.Internal, err.Error())
 	}
 
@@ -106,7 +106,7 @@ func (d *URLsService) Delete(id int32) error {
 func (d *URLsService) Get() ([]*urls.Url, error) {
 	rows, err := d.db.Query("SELECT id, address, `interval` FROM urls")
 	if err != nil {
-		logrus.Error(err)
+		logrus.Errorln(err)
 		if err == sql.ErrNoRows {
 			return nil, status.Error(codes.NotFound, err.Error())
 		} else {
@@ -121,14 +121,14 @@ func (d *URLsService) Get() ([]*urls.Url, error) {
 		row := urls.Url{}
 		err = rows.Scan(&row.Id, &row.Url, &row.Interval)
 		if err != nil {
-			logrus.Error(err)
+			logrus.Errorln(err)
 			return result, status.Error(codes.Internal, err.Error())
 		}
 		result = append(result, &row)
 	}
 
 	if err = rows.Err(); err != nil {
-		logrus.Error(err)
+		logrus.Errorln(err)
 		return result, status.Error(codes.Internal, err.Error())
 	}
 

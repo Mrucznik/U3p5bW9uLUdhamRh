@@ -23,7 +23,7 @@ func (s *Saver) Save(data *urls.Response) error {
 		s.id, data.Response, data.Duration, data.CreatedAt)
 
 	if err != nil {
-		logrus.Error(err)
+		logrus.Errorln(err)
 		return status.Error(codes.Internal, err.Error())
 	}
 	return nil
@@ -47,14 +47,14 @@ func (s *Saver) GetResults() ([]*urls.Response, error) {
 		row := urls.Response{}
 		err = rows.Scan(&row.Response, &row.Duration, &row.CreatedAt)
 		if err != nil {
-			logrus.Error(err)
+			logrus.Errorln(err)
 			return result, status.Error(codes.Internal, err.Error())
 		}
 		result = append(result, &row)
 	}
 
 	if err = rows.Err(); err != nil {
-		logrus.Error(err)
+		logrus.Errorln(err)
 		return result, status.Error(codes.Internal, err.Error())
 	}
 
