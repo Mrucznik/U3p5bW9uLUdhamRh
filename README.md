@@ -1,6 +1,6 @@
 # Fetcher API
 
-This is simple fetcher API, which provides service for saving URLs and getting data from it with specified time interval.
+This is the simple fetcher API, which provides service for saving URLs and getting data from it with a specified time interval.
 
 ## How to build
 You need the Google protocol buffers compiler to build this project. You can download it from the official repository: https://github.com/protocolbuffers/protobuf/releases 
@@ -32,11 +32,11 @@ You can configure this project by setting up environment variables:
 
 ## Project structure
 
-- db - contains database schema
-- engine - contains source code of saving URLs and fetching mechanism
-    - database - implementation with storing URLs in database
-    - in_memory - implementation with storing URLs in memory
-- grpc - contains gRPC API server with gRPC gateway
-    - proto - protobuf files
-    - third_party - third party files
-- rest - contains HTTP API server with Chi router
+- db - contains database schema.
+- engine - contains source code of saving URLs and fetching mechanism.
+    - database - implementation with storing URLs in a MySQL database.
+    - in_memory - implementation with storing URLs in memory.
+- grpc - contains gRPC API server with gRPC gateway.
+    - proto - protobuf files.
+    - third_party - third party files.
+- rest - contains HTTP API server with Chi router.
