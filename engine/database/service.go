@@ -16,13 +16,15 @@ type URLsService struct {
 
 func NewURLsService(db *sql.DB) *URLsService {
 	ret := &URLsService{db: db}
-	ret.initWorkers()
+	if err := ret.loadWorkers(); err != nil {
+		logrus.Errorln("cannot load workers from database")
+	}
 	return ret
 }
 
 // Fetch all existing URL's from database and start worker for each one.
-func (d *URLsService) initWorkers() error {
-	rows, err := d.db.Query("SELECT id, address, `Interval` FROM urls")
+func (d *URLsService) loadWorkers() error {
+	rows, err := d.db.Query("SELECT id, address, `interval` FROM urls")
 	if err != nil {
 		logrus.Error(err)
 		if err != sql.ErrNoRows {
@@ -52,7 +54,7 @@ func (d *URLsService) initWorkers() error {
 
 // Create a new worker in database and start fetching data from Url.
 func (d *URLsService) Create(url string, interval int) (int, error) {
-	result, err := d.db.Exec("INSERT INTO urls(address, Interval) VALUE (?, ?)",
+	result, err := d.db.Exec("INSERT INTO urls(address, `interval`) VALUE (?, ?)",
 		url, interval)
 	if err != nil {
 		logrus.Error(err)
@@ -97,7 +99,7 @@ func (d *URLsService) Delete(id int) error {
 
 // Get all existing urls.
 func (d *URLsService) Get() ([]*urls.Url, error) {
-	rows, err := d.db.Query("SELECT id, address, `Interval` FROM urls")
+	rows, err := d.db.Query("SELECT id, address, `interval` FROM urls")
 	if err != nil {
 		logrus.Error(err)
 		if err == sql.ErrNoRows {
