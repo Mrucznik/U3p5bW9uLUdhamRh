@@ -2,7 +2,9 @@ package grpc
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
+	"github.com/Mrucznik/U3p5bW9uLUdhamRh/engine/database"
 	"github.com/Mrucznik/U3p5bW9uLUdhamRh/engine/in_memory"
 	"github.com/Mrucznik/U3p5bW9uLUdhamRh/grpc/proto/urls"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
@@ -35,7 +37,16 @@ func RunGRPCServer() {
 	defer s.Stop()
 
 	// Register services
-	urls.RegisterUrlsServiceServer(s, NewServer(in_memory.NewURLsService())) // TODO: Can choose database also
+	if viper.GetBool("USE_DATABASE") {
+		logrus.Infoln("Connecting to MySQL databasee.")
+		mysqlConnection := connectToDatabase()
+		defer mysqlConnection.Close()
+		logrus.Infoln("Connectd.")
+
+		urls.RegisterUrlsServiceServer(s, NewServer(database.NewURLsService(mysqlConnection)))
+	} else {
+		urls.RegisterUrlsServiceServer(s, NewServer(in_memory.NewURLsService()))
+	}
 
 	go func() {
 		logrus.Println("Starting server.")
@@ -56,6 +67,25 @@ func RunGRPCServer() {
 
 	<-ch // Block until signal is received
 	logrus.Infoln("\nStopping the server.")
+}
+
+func connectToDatabase() *sql.DB {
+	logrus.Info("Connecting to MySQL Database...")
+
+	db, err := sql.Open("mysql", viper.GetString("DSN"))
+	if err != nil {
+		logrus.Panic(err)
+	}
+
+	db.SetMaxOpenConns(0)    //default: 0
+	db.SetMaxIdleConns(2)    //default: 2
+	db.SetConnMaxLifetime(0) //default: 0
+
+	err = db.Ping()
+	if err != nil {
+		logrus.Fatalln("Could not connected to the database: ", err)
+	}
+	return db
 }
 
 func setUpgRPCGateway() error {

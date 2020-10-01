@@ -29,6 +29,8 @@ $ docker-compose up
 You can configure this project by setting up environment variables:
 - PORT - port on which HTTP server will be listening on.
 - GRPC_PORT - port on which gRPC server will be listening on.
+- USE_DATABASE - true/false. Should service use in memory implementation or database.
+- DSN - database connection string.
 
 ## Project structure
 

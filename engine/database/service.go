@@ -53,7 +53,7 @@ func (d *URLsService) loadWorkers() error {
 }
 
 // Create a new worker in database and start fetching data from Url.
-func (d *URLsService) Create(url string, interval int) (int, error) {
+func (d *URLsService) Create(url string, interval int32) (int32, error) {
 	result, err := d.db.Exec("INSERT INTO urls(address, `interval`) VALUE (?, ?)",
 		url, interval)
 	if err != nil {
@@ -61,22 +61,22 @@ func (d *URLsService) Create(url string, interval int) (int, error) {
 		return 0, status.Error(codes.Internal, err.Error())
 	}
 
-	id, err := result.LastInsertId()
+	id64, err := result.LastInsertId()
+	id := int32(id64)
 	if err != nil {
 		logrus.Error(err)
 		return 0, status.Error(codes.Internal, err.Error())
 	}
 
 	// Create & start worker
-	id32 := int32(id)
-	d.workers[id32] = engine.NewWorker(url, int32(interval), NewSaver(d.db, id32))
-	d.workers[id32].Start()
+	d.workers[id] = engine.NewWorker(url, int32(interval), NewSaver(d.db, id))
+	d.workers[id].Start()
 
-	return int(id), nil
+	return id, nil
 }
 
 // Delete an existing worker, it's history and stop fetching data from Url.
-func (d *URLsService) Delete(id int) error {
+func (d *URLsService) Delete(id int32) error {
 	result, err := d.db.Exec("DELETE FROM urls WHERE id = ?", id)
 	if err != nil {
 		logrus.Error(err)
@@ -92,7 +92,7 @@ func (d *URLsService) Delete(id int) error {
 	if deletedRows == 0 {
 		return status.Errorf(codes.NotFound, "Record of id %v not found.", id)
 	}
-	d.workers[int32(id)].Stop()
+	d.workers[id].Stop()
 
 	return nil
 }
@@ -131,6 +131,6 @@ func (d *URLsService) Get() ([]*urls.Url, error) {
 }
 
 // Get fetching data from URL history.
-func (d *URLsService) History(id int) ([]*urls.Response, error) {
+func (d *URLsService) History(id int32) ([]*urls.Response, error) {
 	return d.workers[int32(id)].GetResults()
 }
