@@ -2,6 +2,9 @@
 
 This is the simple fetcher API, which provides service for saving URLs and getting data from it with a specified time interval.
 
+## Documentation
+You can find swagger-ui documentation [here](!https://mrucznik.github.io/U3p5bW9uLUdhamRh).
+
 ## How to build
 You need the Google protocol buffers compiler to build this project. You can download it from the official repository: https://github.com/protocolbuffers/protobuf/releases 
 ```
