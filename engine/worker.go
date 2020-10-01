@@ -10,17 +10,17 @@ import (
 )
 
 type Worker struct {
-	Url           string
-	Interval      time.Duration
-	DataContainer IDataContainer
-	cancel        context.CancelFunc
+	Url      string
+	Interval time.Duration
+	saver    ISaver
+	cancel   context.CancelFunc
 }
 
-func NewWorker(url string, interval int32, dataContainer IDataContainer) *Worker {
+func NewWorker(url string, interval int32, dataContainer ISaver) *Worker {
 	return &Worker{
-		Url:           url,
-		Interval:      time.Duration(interval),
-		DataContainer: dataContainer,
+		Url:      url,
+		Interval: time.Duration(interval),
+		saver:    dataContainer,
 	}
 }
 
@@ -43,6 +43,10 @@ func (w *Worker) Stop() {
 	w.cancel()
 }
 
+func (w *Worker) GetResults() ([]*urls.Response, error) {
+	return w.saver.GetResults()
+}
+
 func (w *Worker) fetch() {
 	client := http.Client{
 		Timeout: 5 * time.Second,
@@ -58,7 +62,7 @@ func (w *Worker) fetch() {
 			log.Fatal(err)
 		}
 		bodyString := string(bodyBytes)
-		err = w.DataContainer.Save(&urls.Response{
+		err = w.saver.Save(&urls.Response{
 			Response:  bodyString,
 			Duration:  duration,
 			CreatedAt: time.Now().Unix(),
@@ -67,7 +71,7 @@ func (w *Worker) fetch() {
 			log.Fatal(err)
 		}
 	} else {
-		err = w.DataContainer.Save(&urls.Response{
+		err = w.saver.Save(&urls.Response{
 			Response:  "null",
 			Duration:  duration,
 			CreatedAt: time.Now().Unix(),

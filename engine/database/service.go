@@ -9,19 +9,19 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type DatabaseURLsService struct {
+type URLsService struct {
 	db      *sql.DB
 	workers map[int32]*engine.Worker
 }
 
-func NewDatabaseUrls(db *sql.DB) *DatabaseURLsService {
-	ret := &DatabaseURLsService{db: db}
+func NewDatabaseUrls(db *sql.DB) *URLsService {
+	ret := &URLsService{db: db}
 	ret.initWorkers()
 	return ret
 }
 
 // Fetch all existing URL's from database and start worker for each one.
-func (d *DatabaseURLsService) initWorkers() error {
+func (d *URLsService) initWorkers() error {
 	rows, err := d.db.Query("SELECT id, address, `Interval` FROM urls")
 	if err != nil {
 		logrus.Error(err)
@@ -39,7 +39,7 @@ func (d *DatabaseURLsService) initWorkers() error {
 		}
 
 		// Create & start worker
-		d.workers[row.Id] = engine.NewWorker(row.Url, row.Interval, NewSaver(d.db))
+		d.workers[row.Id] = engine.NewWorker(row.Url, row.Interval, NewSaver(d.db, row.Id))
 		d.workers[row.Id].Start()
 	}
 
@@ -51,7 +51,7 @@ func (d *DatabaseURLsService) initWorkers() error {
 }
 
 // Create a new worker in database and start fetching data from Url.
-func (d *DatabaseURLsService) Create(url string, interval int) (int, error) {
+func (d *URLsService) Create(url string, interval int) (int, error) {
 	result, err := d.db.Exec("INSERT INTO urls(address, Interval) VALUE (?, ?)",
 		url, interval)
 	if err != nil {
@@ -67,14 +67,14 @@ func (d *DatabaseURLsService) Create(url string, interval int) (int, error) {
 
 	// Create & start worker
 	id32 := int32(id)
-	d.workers[id32] = engine.NewWorker(url, int32(interval), NewSaver(d.db))
+	d.workers[id32] = engine.NewWorker(url, int32(interval), NewSaver(d.db, id32))
 	d.workers[id32].Start()
 
 	return int(id), nil
 }
 
 // Delete an existing worker, it's history and stop fetching data from Url.
-func (d *DatabaseURLsService) Delete(id int) error {
+func (d *URLsService) Delete(id int) error {
 	result, err := d.db.Exec("DELETE FROM urls WHERE id = ?", id)
 	if err != nil {
 		logrus.Error(err)
@@ -96,7 +96,7 @@ func (d *DatabaseURLsService) Delete(id int) error {
 }
 
 // Get all existing urls.
-func (d *DatabaseURLsService) Get() ([]*urls.Url, error) {
+func (d *URLsService) Get() ([]*urls.Url, error) {
 	rows, err := d.db.Query("SELECT id, address, `Interval` FROM urls")
 	if err != nil {
 		logrus.Error(err)
@@ -129,34 +129,6 @@ func (d *DatabaseURLsService) Get() ([]*urls.Url, error) {
 }
 
 // Get fetching data from URL history.
-func (d *DatabaseURLsService) History(id int) ([]*urls.Response, error) {
-	rows, err := d.db.Query("SELECT response, duration, created_at FROM url_history WHERE url_id=?", id)
-	if err != nil {
-		logrus.Error(err)
-		if err == sql.ErrNoRows {
-			return nil, status.Error(codes.NotFound, err.Error())
-		} else {
-			return nil, status.Error(codes.Internal, err.Error())
-		}
-	}
-	defer rows.Close()
-
-	result := make([]*urls.Response, 0)
-
-	for rows.Next() {
-		row := urls.Response{}
-		err = rows.Scan(&row.Response, &row.Duration, &row.CreatedAt)
-		if err != nil {
-			logrus.Error(err)
-			return result, status.Error(codes.Internal, err.Error())
-		}
-		result = append(result, &row)
-	}
-
-	if err = rows.Err(); err != nil {
-		logrus.Error(err)
-		return result, status.Error(codes.Internal, err.Error())
-	}
-
-	return result, nil
+func (d *URLsService) History(id int) ([]*urls.Response, error) {
+	return d.workers[int32(id)].GetResults()
 }

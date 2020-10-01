@@ -15,5 +15,5 @@ type IURLsService interface {
 
 type ISaver interface {
 	Save(data *urls.Response) error
-	GetResults() []*urls.Response
+	GetResults() ([]*urls.Response, error)
 }

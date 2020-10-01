@@ -15,6 +15,6 @@ func (s Saver) Save(data *urls.Response) error {
 	return nil
 }
 
-func (s Saver) GetResults() []*urls.Response {
-	return s.results
+func (s Saver) GetResults() ([]*urls.Response, error) {
+	return s.results, nil
 }

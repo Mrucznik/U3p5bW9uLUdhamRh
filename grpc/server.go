@@ -45,6 +45,7 @@ func RunGRPCServer() {
 			return
 		}
 		opts = append(opts, grpc.Creds(creds))
+		opts = append(opts, grpc.MaxRecvMsgSize(1048576)) // MAX 1MB message size
 	}
 
 	//serve gRPC services
