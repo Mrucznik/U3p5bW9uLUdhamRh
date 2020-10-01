@@ -820,13 +820,13 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type UrlsServiceClient interface {
-	// Create an URL and runs worker, that fetch data from url by specified interval.
+	// Create a URL and runs worker, that fetch data from url by specified interval.
 	CreateUrl(ctx context.Context, in *CreateUrlRequest, opts ...grpc.CallOption) (*CreateUrlResponse, error)
-	// Delete an URL and stops worker.
+	// Delete a URL and stops worker.
 	DeleteUrl(ctx context.Context, in *DeleteUrlRequest, opts ...grpc.CallOption) (*DeleteUrlResponse, error)
 	// Gets all stored URLs.
 	GetUrls(ctx context.Context, in *GetUrlsRequest, opts ...grpc.CallOption) (*GetUrlsResponse, error)
-	// Get URL fetching history.
+	// Get a URL fetching history.
 	GetUrlHistory(ctx context.Context, in *GetUrlHistoryRequest, opts ...grpc.CallOption) (*GetUrlHistoryResponse, error)
 }
 
@@ -876,13 +876,13 @@ func (c *urlsServiceClient) GetUrlHistory(ctx context.Context, in *GetUrlHistory
 
 // UrlsServiceServer is the server API for UrlsService service.
 type UrlsServiceServer interface {
-	// Create an URL and runs worker, that fetch data from url by specified interval.
+	// Create a URL and runs worker, that fetch data from url by specified interval.
 	CreateUrl(context.Context, *CreateUrlRequest) (*CreateUrlResponse, error)
-	// Delete an URL and stops worker.
+	// Delete a URL and stops worker.
 	DeleteUrl(context.Context, *DeleteUrlRequest) (*DeleteUrlResponse, error)
 	// Gets all stored URLs.
 	GetUrls(context.Context, *GetUrlsRequest) (*GetUrlsResponse, error)
-	// Get URL fetching history.
+	// Get a URL fetching history.
 	GetUrlHistory(context.Context, *GetUrlHistoryRequest) (*GetUrlHistoryResponse, error)
 }
 
