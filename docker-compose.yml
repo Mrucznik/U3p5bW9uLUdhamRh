@@ -4,6 +4,8 @@ services:
   urls-service:
     build: .
     environment:
+      - PORT=8080
+      - GRPC_PORT=8081
       - DSN=root:secret@tcp(mysqld:3306)/mysql
     networks:
       intranet:

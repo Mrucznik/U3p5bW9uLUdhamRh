@@ -9,7 +9,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
@@ -24,27 +23,14 @@ func RunGRPCServer() {
 
 	logrus.Infoln("Starting listener for gRPC API")
 	listener, err := net.Listen("tcp",
-		fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("grpcPort")))
+		fmt.Sprintf("%s:%d", viper.GetString("HOST"), viper.GetInt("GRPC_PORT")))
 	if err != nil {
 		logrus.Fatalf("Failed to listen: %v", err)
 	}
 	logrus.Infoln("Listener started on", listener.Addr())
 
-	//server options
-	var opts []grpc.ServerOption
-	if viper.GetBool("ssl.enabled") {
-		creds, sslErr := credentials.NewServerTLSFromFile(
-			viper.GetString("ssl.cert"), viper.GetString("ssl.key"))
-		if sslErr != nil {
-			logrus.Fatalln("Failed loading certificates:", sslErr)
-			return
-		}
-		opts = append(opts, grpc.Creds(creds))
-		opts = append(opts, grpc.MaxRecvMsgSize(1048576)) // MAX 1MB message size
-	}
-
 	//serve gRPC services
-	s := grpc.NewServer(opts...)
+	s := grpc.NewServer(grpc.MaxRecvMsgSize(1048576))
 	reflection.Register(s)
 	defer s.Stop()
 
@@ -81,12 +67,12 @@ func setUpgRPCGateway() error {
 	mux := runtime.NewServeMux()
 	opts := []grpc.DialOption{grpc.WithInsecure()}
 	err := urls.RegisterUrlsServiceHandlerFromEndpoint(ctx, mux,
-		fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("grpcPort")),
+		fmt.Sprintf("%s:%d", viper.GetString("HOST"), viper.GetInt("GRPC_PORT")),
 		opts)
 	if err != nil {
 		return err
 	}
 
 	// Start HTTP server (and proxy calls to gRPC server endpoint)
-	return http.ListenAndServe(fmt.Sprintf("%s:%d", viper.GetString("host"), viper.GetInt("port")), mux)
+	return http.ListenAndServe(fmt.Sprintf("%s:%d", viper.GetString("HOST"), viper.GetInt("PORT")), mux)
 }
