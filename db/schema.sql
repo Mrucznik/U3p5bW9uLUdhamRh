@@ -13,8 +13,10 @@ CREATE TABLE `url_history`
     `url_id` int(11) NOT NULL,
     `response` TEXT,
     `duration` DOUBLE NOT NULL,
-    `created_at` TIMESTAMP NOT NULL,
+    `created_at` int(11) NOT NULL,
     PRIMARY KEY (`id`),
     FOREIGN KEY(`url_id`) REFERENCES urls(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;

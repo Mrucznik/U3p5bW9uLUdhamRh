@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/Mrucznik/U3p5bW9uLUdhamRh/engine"
 	"github.com/Mrucznik/U3p5bW9uLUdhamRh/grpc/proto/urls"
 	"github.com/sirupsen/logrus"
@@ -15,7 +16,7 @@ type URLsService struct {
 }
 
 func NewURLsService(db *sql.DB) *URLsService {
-	ret := &URLsService{db: db}
+	ret := &URLsService{db: db, workers: make(map[int32]*engine.Worker, 0)}
 	if err := ret.loadWorkers(); err != nil {
 		logrus.Errorln("cannot load workers from database")
 	}
@@ -69,7 +70,7 @@ func (d *URLsService) Create(url string, interval int32) (int32, error) {
 	}
 
 	// Create & start worker
-	d.workers[id] = engine.NewWorker(url, int32(interval), NewSaver(d.db, id))
+	d.workers[id] = engine.NewWorker(url, interval, NewSaver(d.db, id))
 	d.workers[id].Start()
 
 	return id, nil
@@ -92,7 +93,11 @@ func (d *URLsService) Delete(id int32) error {
 	if deletedRows == 0 {
 		return status.Errorf(codes.NotFound, "Record of id %v not found.", id)
 	}
-	d.workers[id].Stop()
+	if worker, ok := d.workers[id]; ok {
+		worker.Stop()
+	} else {
+		logrus.Errorf("worker of id %d doesn't exists\n", id)
+	}
 
 	return nil
 }
@@ -132,5 +137,8 @@ func (d *URLsService) Get() ([]*urls.Url, error) {
 
 // Get fetching data from URL history.
 func (d *URLsService) History(id int32) ([]*urls.Response, error) {
-	return d.workers[int32(id)].GetResults()
+	if worker, ok := d.workers[id]; ok {
+		return worker.GetResults()
+	}
+	return nil, status.Error(codes.Internal, fmt.Sprintf("worker of id %d doesn't exists", id))
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/Mrucznik/U3p5bW9uLUdhamRh/engine/database"
 	"github.com/Mrucznik/U3p5bW9uLUdhamRh/engine/in_memory"
 	"github.com/Mrucznik/U3p5bW9uLUdhamRh/grpc/proto/urls"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
