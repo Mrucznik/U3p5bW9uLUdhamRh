@@ -21,11 +21,12 @@ import (
 //go:generate protoc -I. -I$GOPATH/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.14.6/third_party/googleapis --go_opt plugins=grpc --grpc-gateway_out . --go_out . --grpc-gateway_opt logtostderr=true --swagger_out . --swagger_opt logtostderr=true --grpc-gateway_opt paths=source_relative proto/urls/urls.proto
 
 func RunGRPCServer() {
-	viper.SetDefault("port", 8080)
-	viper.SetDefault("grpcPort", 8081)
-
 	// if we crash the go code, we get the file name and line number in log
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
+	// Viper default configs
+	viper.SetDefault("port", 8080)
+	viper.SetDefault("grpcPort", 8081)
 
 	logrus.Infoln("Starting listener for gRPC API")
 	listener, err := net.Listen("tcp",
@@ -62,12 +63,12 @@ func RunGRPCServer() {
 		if err := s.Serve(listener); err != nil {
 			logrus.Fatalln("Failed to serve", err)
 		}
-
-		// Set up the gRPC gateway for REST endpoints
-		if err = setUpgRPCGateway(); err != nil {
-			logrus.Fatalln("Failed to set up gRPC gateway: ", err)
-		}
 	}()
+
+	// Set up the gRPC gateway for REST endpoints
+	if err = setUpgRPCGateway(); err != nil {
+		logrus.Fatalln("Failed to set up gRPC gateway: ", err)
+	}
 
 	// Wait for CTRL+C to exit
 	ch := make(chan os.Signal, 1)
