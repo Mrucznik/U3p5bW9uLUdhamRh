@@ -10,11 +10,11 @@ func NewSaver() *Saver {
 	return &Saver{results: make([]*urls.Response, 0)}
 }
 
-func (s Saver) Save(data *urls.Response) error {
+func (s *Saver) Save(data *urls.Response) error {
 	s.results = append(s.results, data)
 	return nil
 }
 
-func (s Saver) GetResults() ([]*urls.Response, error) {
+func (s *Saver) GetResults() ([]*urls.Response, error) {
 	return s.results, nil
 }

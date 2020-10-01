@@ -17,7 +17,7 @@ func NewSaver(db *sql.DB, id int32) *Saver {
 	return &Saver{db: db, id: id}
 }
 
-func (s Saver) Save(data *urls.Response) error {
+func (s *Saver) Save(data *urls.Response) error {
 	_, err := s.db.Exec("INSERT INTO url_history(url_id, response, duration, created_at) VALUE (?, ?, ?, ?)",
 		s.id, data.Response, data.Duration, data.CreatedAt)
 
@@ -28,7 +28,7 @@ func (s Saver) Save(data *urls.Response) error {
 	return nil
 }
 
-func (s Saver) GetResults() ([]*urls.Response, error) {
+func (s *Saver) GetResults() ([]*urls.Response, error) {
 	rows, err := s.db.Query("SELECT response, duration, created_at FROM url_history WHERE url_id=?", s.id)
 	if err != nil {
 		logrus.Error(err)
