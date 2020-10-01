@@ -54,7 +54,7 @@ func RunGRPCServer() {
 	defer s.Stop()
 
 	// Register services
-	urls.RegisterUrlsServiceServer(s, NewServer(in_memory.NewInMemoryURLsService())) // TODO: Can choose database also
+	urls.RegisterUrlsServiceServer(s, NewServer(in_memory.NewURLsService())) // TODO: Can choose database also
 
 	go func() {
 		logrus.Println("Starting server.")

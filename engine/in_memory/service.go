@@ -11,7 +11,7 @@ type URLsService struct {
 	ids     int32
 }
 
-func NewInMemoryURLsService() *URLsService {
+func NewURLsService() *URLsService {
 	return &URLsService{
 		workers: make(map[int32]*engine.Worker, 0),
 	}

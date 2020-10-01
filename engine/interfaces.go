@@ -14,6 +14,8 @@ type IURLsService interface {
 }
 
 type ISaver interface {
+	// Save fetched data.
 	Save(data *urls.Response) error
+	// Get saved data of all fetched requests.
 	GetResults() ([]*urls.Response, error)
 }

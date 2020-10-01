@@ -14,7 +14,7 @@ type URLsService struct {
 	workers map[int32]*engine.Worker
 }
 
-func NewDatabaseUrls(db *sql.DB) *URLsService {
+func NewURLsService(db *sql.DB) *URLsService {
 	ret := &URLsService{db: db}
 	ret.initWorkers()
 	return ret
