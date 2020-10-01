@@ -43,7 +43,7 @@ func (i *URLsService) Get() ([]*urls.Url, error) {
 		result = append(result, &urls.Url{
 			Id:       id,
 			Url:      worker.Url,
-			Interval: int32(worker.Interval.Milliseconds()),
+			Interval: int32(worker.Interval.Seconds()),
 		})
 	}
 	return result, nil

@@ -17,11 +17,11 @@ type Worker struct {
 	cancel   context.CancelFunc
 }
 
-func NewWorker(url string, interval int32, dataContainer ISaver) *Worker {
+func NewWorker(url string, interval int32, saver ISaver) *Worker {
 	return &Worker{
 		Url:      url,
-		Interval: time.Duration(interval),
-		saver:    dataContainer,
+		Interval: time.Duration(interval) * time.Second,
+		saver:    saver,
 	}
 }
 
@@ -36,14 +36,16 @@ func (w *Worker) Start() {
 			default:
 				w.fetch()
 			}
-			time.Sleep(w.Interval * time.Second)
+			time.Sleep(w.Interval)
 		}
 	}()
 }
 
 // Stop ends fetching data process.
 func (w *Worker) Stop() {
-	w.cancel()
+	if w.cancel != nil {
+		w.cancel()
+	}
 }
 
 // GetResults returns fetching results.
