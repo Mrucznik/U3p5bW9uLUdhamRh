@@ -2,6 +2,14 @@
 
 This is the simple fetcher API, which provides service for saving URLs and getting data from it with a specified time interval.
 
+## Endpoints
+
+This API provides endpoints:
+- GET /api/fetcher - Gets all stored URLs.
+- POST /api/fetcher - Create a URL and runs worker, that fetch data from url by specified interval.
+- DELETE /api/fetcher/{id} - Delete a URL and stops worker.
+- GET /api/fetcher/{id}/history - Get URL fetching history.
+
 ## Documentation
 You can find swagger-ui documentation [here](https://mrucznik.github.io/U3p5bW9uLUdhamRh).
 

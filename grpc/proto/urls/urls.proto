@@ -10,7 +10,7 @@ import "google/api/annotations.proto"; //from https://github.com/googleapis/goog
 // by specified interval.
 service UrlsService {
 
-    // Create an URL and runs worker, that fetch data from url by specified interval.
+    // Create a URL and runs worker, that fetch data from url by specified interval.
     rpc CreateUrl(CreateUrlRequest) returns (CreateUrlResponse) {
         option (google.api.http) = {
             post: "/api/fetcher"
@@ -18,7 +18,7 @@ service UrlsService {
         };
     }
 
-    // Delete an URL and stops worker.
+    // Delete a URL and stops worker.
     rpc DeleteUrl(DeleteUrlRequest) returns (DeleteUrlResponse) {
         option (google.api.http) = {
             delete: "/api/fetcher/{id}"
@@ -32,7 +32,7 @@ service UrlsService {
         };
     }
 
-    // Get URL fetching history.
+    // Get a URL fetching history.
     rpc GetUrlHistory(GetUrlHistoryRequest) returns (GetUrlHistoryResponse) {
         option (google.api.http) = {
             get: "/api/fetcher/{id}/history"
