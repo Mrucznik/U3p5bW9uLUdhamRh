@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// This type provides saving mechanism with usage of MySQL database.
 type Saver struct {
 	db *sql.DB
 	id int32

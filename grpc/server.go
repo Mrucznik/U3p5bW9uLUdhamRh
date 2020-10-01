@@ -40,7 +40,7 @@ func RunGRPCServer() {
 	// Register services
 	if viper.GetBool("USE_DATABASE") {
 		logrus.Infoln("Connecting to MySQL databasee.")
-		mysqlConnection := connectToDatabase()
+		mysqlConnection := setUpDatabase()
 		defer mysqlConnection.Close()
 		logrus.Infoln("Connectd.")
 
@@ -70,7 +70,7 @@ func RunGRPCServer() {
 	logrus.Infoln("\nStopping the server.")
 }
 
-func connectToDatabase() *sql.DB {
+func setUpDatabase() *sql.DB {
 	logrus.Info("Connecting to MySQL Database...")
 
 	db, err := sql.Open("mysql", viper.GetString("DSN"))

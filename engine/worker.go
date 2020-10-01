@@ -3,12 +3,13 @@ package engine
 import (
 	"context"
 	"github.com/Mrucznik/U3p5bW9uLUdhamRh/grpc/proto/urls"
+	"github.com/sirupsen/logrus"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"time"
 )
 
+// Worker provides a mechanism for retrieving and saving data from a URL at specified intervals
 type Worker struct {
 	Url      string
 	Interval time.Duration
@@ -24,6 +25,7 @@ func NewWorker(url string, interval int32, dataContainer ISaver) *Worker {
 	}
 }
 
+// Start begins fetching data process. It run a new goroutine, which can be stopped by Stop method.
 func (w *Worker) Start() {
 	ctx, cancelFunc := context.WithCancel(context.Background())
 	w.cancel = cancelFunc
@@ -39,14 +41,17 @@ func (w *Worker) Start() {
 	}()
 }
 
+// Stop ends fetching data process.
 func (w *Worker) Stop() {
 	w.cancel()
 }
 
+// GetResults returns fetching results.
 func (w *Worker) GetResults() ([]*urls.Response, error) {
 	return w.saver.GetResults()
 }
 
+// fetch method fetch data from URL and saves it.
 func (w *Worker) fetch() {
 	client := http.Client{
 		Timeout: 5 * time.Second,
@@ -59,7 +64,7 @@ func (w *Worker) fetch() {
 	if err == nil && resp.StatusCode == http.StatusOK {
 		bodyBytes, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			log.Fatal(err)
+			logrus.Fatal(err)
 		}
 		bodyString := string(bodyBytes)
 		err = w.saver.Save(&urls.Response{
@@ -68,7 +73,7 @@ func (w *Worker) fetch() {
 			CreatedAt: time.Now().Unix(),
 		})
 		if err != nil {
-			log.Fatal(err)
+			logrus.Fatal(err)
 		}
 	} else {
 		err = w.saver.Save(&urls.Response{
@@ -77,7 +82,7 @@ func (w *Worker) fetch() {
 			CreatedAt: time.Now().Unix(),
 		})
 		if err != nil {
-			log.Fatal(err)
+			logrus.Fatal(err)
 		}
 	}
 }

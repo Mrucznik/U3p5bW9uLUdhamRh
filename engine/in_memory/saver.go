@@ -2,6 +2,7 @@ package in_memory
 
 import "github.com/Mrucznik/U3p5bW9uLUdhamRh/grpc/proto/urls"
 
+// This type provides in-memory saving mechanism.
 type Saver struct {
 	results []*urls.Response
 }
