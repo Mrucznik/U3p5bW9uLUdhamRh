@@ -2,11 +2,14 @@ package rest
 
 import (
 	"context"
+	"github.com/Mrucznik/U3p5bW9uLUdhamRh/db"
 	"github.com/Mrucznik/U3p5bW9uLUdhamRh/engine"
+	"github.com/Mrucznik/U3p5bW9uLUdhamRh/engine/database"
 	"github.com/Mrucznik/U3p5bW9uLUdhamRh/engine/in_memory"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 	"net/http"
 	"strconv"
 	"time"
@@ -15,7 +18,16 @@ import (
 var service engine.IURLsService
 
 func RunRESTServer() {
-	service = in_memory.NewURLsService()
+	if viper.GetBool("USE_DATABASE") {
+		logrus.Infoln("Connecting to MySQL databasee.")
+		mysqlConnection := db.SetUpDatabase()
+		defer mysqlConnection.Close()
+		logrus.Infoln("Connectd.")
+
+		service = database.NewURLsService(mysqlConnection)
+	} else {
+		service = in_memory.NewURLsService()
+	}
 
 	r := chi.NewRouter()
 

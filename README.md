@@ -45,7 +45,7 @@ You can configure this project by setting up environment variables:
 
 ## Project structure
 
-- db - contains database schema.
+- db - contains database schema and database connection configuration.
 - engine - contains source code of saving URLs and fetching mechanism.
     - database - implementation with storing URLs in a MySQL database.
     - in_memory - implementation with storing URLs in memory.

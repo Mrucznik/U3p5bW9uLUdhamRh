@@ -2,8 +2,8 @@ package grpc
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
+	"github.com/Mrucznik/U3p5bW9uLUdhamRh/db"
 	"github.com/Mrucznik/U3p5bW9uLUdhamRh/engine/database"
 	"github.com/Mrucznik/U3p5bW9uLUdhamRh/engine/in_memory"
 	"github.com/Mrucznik/U3p5bW9uLUdhamRh/grpc/proto/urls"
@@ -40,7 +40,7 @@ func RunGRPCServer() {
 	// Register services
 	if viper.GetBool("USE_DATABASE") {
 		logrus.Infoln("Connecting to MySQL databasee.")
-		mysqlConnection := setUpDatabase()
+		mysqlConnection := db.SetUpDatabase()
 		defer mysqlConnection.Close()
 		logrus.Infoln("Connectd.")
 
@@ -68,25 +68,6 @@ func RunGRPCServer() {
 
 	<-ch // Block until signal is received
 	logrus.Infoln("\nStopping the server.")
-}
-
-func setUpDatabase() *sql.DB {
-	logrus.Info("Connecting to MySQL Database...")
-
-	db, err := sql.Open("mysql", viper.GetString("DSN"))
-	if err != nil {
-		logrus.Panic(err)
-	}
-
-	db.SetMaxOpenConns(0)    //default: 0
-	db.SetMaxIdleConns(2)    //default: 2
-	db.SetConnMaxLifetime(0) //default: 0
-
-	err = db.Ping()
-	if err != nil {
-		logrus.Fatalln("Could not connected to the database: ", err)
-	}
-	return db
 }
 
 func setUpgRPCGateway() error {
