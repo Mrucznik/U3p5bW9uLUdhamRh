@@ -11,7 +11,7 @@ This API provides endpoints:
 - GET /api/fetcher/{id}/history - Get URL fetching history.
 
 ## Documentation
-You can find swagger-ui documentation [here](https://mrucznik.github.io/U3p5bW9uLUdhamRh).
+You can find swagger-ui documentation [here](https://mrucznik.github.io/url-fetcher).
 
 ## How to build
 You need the Google protocol buffers compiler to build this project. You can download it from the official repository: https://github.com/protocolbuffers/protobuf/releases 
