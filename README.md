@@ -38,7 +38,7 @@ $ docker-compose up
 ## Configuration
 
 You can configure this project by setting up environment variables:
-- USE_GRPC - tyure/false. Should we serve API by gRPC or by Chi.
+- USE_GRPC - true/false. Should we serve API by gRPC or by Chi.
 - PORT - port on which HTTP server will be listening on.
 - GRPC_PORT - port on which gRPC server will be listening on.
 - USE_DATABASE - true/false. Should service use in memory implementation or database.
